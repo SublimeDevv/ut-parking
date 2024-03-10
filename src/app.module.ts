@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ParkingSlotModule } from './parking-slot/parking-slot.module';
 import { SensorModule } from './mqtt-sensor/sensor.module';
+import { GatewayModule } from './websockets/websocket.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SensorModule } from './mqtt-sensor/sensor.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    GatewayModule,
     SensorModule,
     ParkingSlotModule,
   ],

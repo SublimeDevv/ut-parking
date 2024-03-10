@@ -1,11 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Query,
+  Patch
 } from '@nestjs/common';
 import { ParkingSlotService } from './parking-slot.service';
 import { CreateParkingSlotDto } from './dto/create-parking-slot.dto';
@@ -16,5 +14,16 @@ import { RangeDto } from 'src/common/dto/range.dto';
 export class ParkingSlotController {
   constructor(private readonly parkingSlotService: ParkingSlotService) {}
 
-  
+  @Get()
+  findAll() {
+    return this.parkingSlotService.findAll();
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateParkingSlotDto: UpdateParkingSlotDto,
+  ) {
+    return this.parkingSlotService.update(id, updateParkingSlotDto);
+  }
 }

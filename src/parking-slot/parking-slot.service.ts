@@ -28,22 +28,23 @@ export class ParkingSlotService {
   }
 
   async update(sensorId: string, updateParkingSlotDto: UpdateParkingSlotDto) {
-    try {
-      const existingSlot = await this.findOne(sensorId);
+    console.log(sensorId);
+     try {
+       const existingSlot = await this.parkingSlotRepository.findOneBy({ id: sensorId });
 
-      if (!existingSlot) {
-        return null;
-      }
+       if (!existingSlot) {
+         return null;
+       }
 
-      const updatedSlot = await this.parkingSlotRepository.preload({
-        id: existingSlot.id,
-        ...updateParkingSlotDto,
-      });
+       const updatedSlot = await this.parkingSlotRepository.preload({
+         id: existingSlot.id,
+         ...updateParkingSlotDto,
+       });
 
-      return await this.parkingSlotRepository.save(updatedSlot);
-    } catch (error) {
-      this.handleDBExceptions(error);
-    }
+       return await this.parkingSlotRepository.save(updatedSlot);
+     } catch (error) {
+       this.handleDBExceptions(error);
+     }
   }
 
   async findAll() {

@@ -13,7 +13,6 @@ export class SensorController {
 
   @MessagePattern('topic/message')
   getNotifications(@Payload() data: any, @Ctx() context: RmqContext) {
-    console.log(data)
-    this.sensorService.createOrUpdateSensor(data, '1');
+    this.sensorService.createOrUpdateSensor(data);
   }
 }

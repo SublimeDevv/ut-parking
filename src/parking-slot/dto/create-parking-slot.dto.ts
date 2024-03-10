@@ -7,5 +7,4 @@ export class CreateParkingSlotDto {
   @IsBoolean()
   @IsOptional()
   isOccupied: boolean;
-
 }
