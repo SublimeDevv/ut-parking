@@ -8,9 +8,8 @@ import { CreateParkingSlotDto } from './dto/create-parking-slot.dto';
 import { UpdateParkingSlotDto } from './dto/update-parking-slot.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ParkingSlot } from './entities/parking-slot.entity';
-import { Repository, Between } from 'typeorm';
+import { Repository } from 'typeorm';
 import { isUUID } from 'class-validator';
-import { RangeDto } from 'src/common/dto/range.dto';
 
 @Injectable()
 export class ParkingSlotService {
@@ -22,38 +21,10 @@ export class ParkingSlotService {
 
   async create(createParkingSlotDto: CreateParkingSlotDto) {
     try {
-      const { sensorId, distance } = createParkingSlotDto;
-      const existingSlot = await this.parkingSlotRepository.findOneBy({
-        sensorId,
-      });
-
-      if (existingSlot) {
-        const isOccupied = +distance <= 10;
-        return this.update(existingSlot.id, { isOccupied, distance });
-      } else {
-        console.log(+distance <= 10);
-        if (+distance <= 10) {
-          const slot = this.parkingSlotRepository.create({
-            sensorId: sensorId,
-            distance: +distance,
-          });
-          await this.parkingSlotRepository.save(slot);
-          return slot;
-        }
-      }
+      await this.parkingSlotRepository.save(createParkingSlotDto);
     } catch (error) {
       this.handleDBExceptions(error);
     }
-  }
-
-  async getAllDistancePerRange(rangeDto: RangeDto) {
-    const { min = 1, max = 5 } = rangeDto;
-    const sensorsWithinRange = await this.parkingSlotRepository.find({
-      where: {
-        distance: Between(min, max), 
-      },
-    });
-    return sensorsWithinRange;
   }
 
   async update(sensorId: string, updateParkingSlotDto: UpdateParkingSlotDto) {
@@ -67,7 +38,6 @@ export class ParkingSlotService {
       const updatedSlot = await this.parkingSlotRepository.preload({
         id: existingSlot.id,
         ...updateParkingSlotDto,
-        distance: +updateParkingSlotDto.distance,
       });
 
       return await this.parkingSlotRepository.save(updatedSlot);

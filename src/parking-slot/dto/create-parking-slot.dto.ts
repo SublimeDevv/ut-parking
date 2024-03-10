@@ -8,6 +8,4 @@ export class CreateParkingSlotDto {
   @IsOptional()
   isOccupied: boolean;
 
-  @IsString()
-  distance: string;
 }

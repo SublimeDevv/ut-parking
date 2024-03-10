@@ -1,9 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import * as express from 'express';
-import * as fs from 'fs';
-import * as path from 'path';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,13 +14,22 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  
-  const uploadsDir = path.join(__dirname, 'uploads');
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir);
-  }
-  app.use('/uploads', express.static('uploads'));
+
   await app.listen(process.env.PORT);
   logger.log(`App running on port ${process.env.PORT}`);
+
+  const mqttSensor = await NestFactory.create(AppModule);
+
+  mqttSensor.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.MQTT,
+    options: {
+      url: 'mqtt://test.mosquitto.org',
+      port: 1883,
+    },
+  });
+
+  await mqttSensor.startAllMicroservices();
+  await mqttSensor.listen(3001);
 }
+
 bootstrap();

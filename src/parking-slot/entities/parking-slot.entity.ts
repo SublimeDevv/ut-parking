@@ -11,11 +11,6 @@ export class ParkingSlot {
   })
   sensorId: string;
 
-  @Column('bool', {
-    default: true,
-  })
+  @Column({ type: 'boolean', default: true })
   isOccupied: boolean;
-
-  @Column('int')
-  distance: number;
 }

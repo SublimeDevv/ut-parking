@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MulterModule } from '@nestjs/platform-express';
 import { ParkingSlotModule } from './parking-slot/parking-slot.module';
+import { SensorModule } from './mqtt-sensor/sensor.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-      type: 'postgres',
+      type: 'mysql',
       host: process.env.DB_HOST,
       port: +process.env.DB_PORT,
       database: process.env.DB_NAME,
@@ -17,11 +17,9 @@ import { ParkingSlotModule } from './parking-slot/parking-slot.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    MulterModule.register({
-      dest: './uploads',
-    }),
-
+    SensorModule,
     ParkingSlotModule,
   ],
+  providers: [],
 })
 export class AppModule {}
