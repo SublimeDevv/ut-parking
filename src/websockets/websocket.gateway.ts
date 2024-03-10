@@ -6,9 +6,12 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { ParkingSlotService } from '../parking-slot/parking-slot.service';
+import { EventsService } from 'src/events/events.service';
 
+@Injectable()
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -17,7 +20,15 @@ import { ParkingSlotService } from '../parking-slot/parking-slot.service';
 export class WebsocketGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private readonly parkingSlotService: ParkingSlotService) {}
+  constructor(
+    private readonly parkingSlotService: ParkingSlotService,
+    private readonly eventsService: EventsService,
+  ) {
+    this.eventsService.on(
+      'reupdateData',
+      this.handleReupdateData.bind(this),
+    );
+  }
 
   @WebSocketServer()
   server: Server;
@@ -30,15 +41,15 @@ export class WebsocketGateway
     console.log('Client disconnected', client.id);
   }
 
-  @SubscribeMessage('requestDbData')
-  async handleDbRequest(@ConnectedSocket() client: Socket) {
-    const dbData = await this.getDataFromDb();
+  @SubscribeMessage('reupdateData')
+  async handleReupdateData() {
+    const dbData = await this.parkingSlotService.findAll();
     this.server.emit('updateData', dbData);
   }
 
-  private async getDataFromDb(): Promise<any> {
-    const getAllSlots = this.parkingSlotService.findAll()
-    return getAllSlots;
-    
+  @SubscribeMessage('getData')
+  async handleParkingSlotUpdate() {
+    const dbData = await this.parkingSlotService.findAll();
+    this.server.emit('updateData', dbData); 
   }
 }

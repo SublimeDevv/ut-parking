@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { WebsocketGateway } from './websocket.gateway';
 import { ParkingSlotModule } from 'src/parking-slot/parking-slot.module';
+import { EventsService } from 'src/events/events.service';
 
 @Module({
-  providers: [WebsocketGateway],
-  imports: [ParkingSlotModule]
+  providers: [WebsocketGateway, EventsService],
+  imports: [forwardRef(() => ParkingSlotModule)],
+  exports: [WebsocketGateway], // Exporta WebsocketGateway
 })
 export class GatewayModule {}

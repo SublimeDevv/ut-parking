@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ParkingSlotModule } from './parking-slot/parking-slot.module';
 import { SensorModule } from './mqtt-sensor/sensor.module';
 import { GatewayModule } from './websockets/websocket.module';
+import { EventsService } from './events/events.service';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { GatewayModule } from './websockets/websocket.module';
     SensorModule,
     ParkingSlotModule,
   ],
-  providers: [],
+  providers: [EventsService],
 })
 export class AppModule {}

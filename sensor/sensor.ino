@@ -52,7 +52,7 @@ void sendSensorStates() {
   for (int i = 0; i < numSensors; i++) {
     if (sensorStates[i]) { 
       if (message != "[") message += ", ";
-      message += "\"sensor" + String(i + 1) + "\"";
+      message += "\"sensor" + String(i + 1) + "\""
     }
   }
   message += "]";
