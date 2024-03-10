@@ -2,15 +2,20 @@ import {
   DataSource,
   EntitySubscriberInterface,
   EventSubscriber,
+  Repository,
   UpdateEvent,
 } from 'typeorm';
 import { ParkingSlot } from './parking-slot.entity';
+import { ParkingSlotService } from '../parking-slot.service';
 
 @EventSubscriber()
 export class ParkingSlotSubscriber
   implements EntitySubscriberInterface<ParkingSlot>
 {
-  constructor(dataSource: DataSource) {
+  constructor(
+    dataSource: DataSource,
+    private readonly parkingSlotService: ParkingSlotService
+  ) {
     dataSource.subscribers.push(this);
   }
 
@@ -18,7 +23,8 @@ export class ParkingSlotSubscriber
     return ParkingSlot;
   }
 
-  afterUpdate(event: UpdateEvent<ParkingSlot>) {
-    console.log(`AFTER SLOT UPDATE: `, event.entity);
+  async afterUpdate(event: UpdateEvent<ParkingSlot>) {
+    const getAllSlots = await this.parkingSlotService.findAll();
+    console.log(`AFTER SLOT UPDATE: `, getAllSlots);
   }
 }
