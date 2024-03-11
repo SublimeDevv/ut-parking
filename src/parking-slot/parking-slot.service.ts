@@ -27,6 +27,8 @@ export class ParkingSlotService {
     }
   }
 
+
+
   async update(sensorId: string, updateParkingSlotDto: UpdateParkingSlotDto) {
      try {
        const existingSlot = await this.parkingSlotRepository.findOneBy({ id: sensorId });

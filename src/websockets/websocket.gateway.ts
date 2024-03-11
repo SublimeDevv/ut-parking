@@ -1,5 +1,4 @@
 import {
-  ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
@@ -41,10 +40,9 @@ export class WebsocketGateway
     console.log('Client disconnected', client.id);
   }
 
-  @SubscribeMessage('reupdateData')
   async handleReupdateData() {
     const dbData = await this.parkingSlotService.findAll();
-    this.server.emit('updateData', dbData);
+    this.server.emit('reupdateData', dbData);
   }
 
   @SubscribeMessage('getData')

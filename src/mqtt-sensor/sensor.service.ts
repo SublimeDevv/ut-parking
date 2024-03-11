@@ -6,6 +6,7 @@ import {
 import { ParkingSlot } from './../parking-slot/entities/parking-slot.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import axios from 'axios';
 
 @Injectable()
 export class SensorService {
@@ -18,39 +19,54 @@ export class SensorService {
 
   async createOrUpdateSensor(activeSensors: string[]) {
     try {
-      const getAllSlots = await this.parkingSlotRepository.find();
+      if (activeSensors.length > 0) {
+        const getAllSlots = await this.parkingSlotRepository.find();
+        const existingSensorIds = new Set(
+          getAllSlots.map((slot) => slot.sensorId),
+        );
 
-      const existingSensorIds = new Set(
-        getAllSlots.map((slot) => slot.sensorId),
-      );
+        for (const sensorId of activeSensors) {
+          const slot = getAllSlots.find((slot) => slot.sensorId === sensorId);
 
-      for (const sensorId of activeSensors) {
-        const slot = getAllSlots.find((slot) => slot.sensorId === sensorId);
-
-        if (slot) {
-          if (!slot.isOccupied) {
-            slot.isOccupied = true;
-            await this.parkingSlotRepository.save(slot);
+          if (slot) {
+            if (!slot.isOccupied) {
+              await axios.patch(
+                `${process.env.HOST_API}/parking-slot/${slot.id}`,
+                { isOccupied: true },
+              );
+            }
+          } else {
+            const newSlot = this.parkingSlotRepository.create({
+              sensorId: sensorId,
+              isOccupied: true,
+            });
+            await this.parkingSlotRepository.save(newSlot);
           }
-        } else {
-          await this.parkingSlotRepository.save({
-            sensorId: sensorId,
-            isOccupied: true,
-          });
+
+          existingSensorIds.delete(sensorId);
         }
 
-        existingSensorIds.delete(sensorId);
-      }
-
-      for (const sensorId of existingSensorIds) {
-        const slot = getAllSlots.find((slot) => slot.sensorId === sensorId);
-        if (slot && slot.isOccupied) {
-          slot.isOccupied = false;
-          await this.parkingSlotRepository.save(slot);
+        for (const sensorId of existingSensorIds) {
+          const slot = getAllSlots.find((slot) => slot.sensorId === sensorId);
+          if (slot && slot.isOccupied) {
+            await axios.patch(
+              `${process.env.HOST_API}/parking-slot/${slot.id}`,
+              { isOccupied: false },
+            );
+          }
+        }
+      } else {
+        const allOccupiedSlots = await this.parkingSlotRepository.find({
+          where: { isOccupied: true },
+        });
+        for (const slot of allOccupiedSlots) {
+          await axios.patch(`${process.env.HOST_API}/parking-slot/${slot.id}`, {
+            isOccupied: false,
+          });
         }
       }
     } catch (error) {
-      this.handleDBExceptions(error); 
+      this.handleDBExceptions(error);
     }
   }
 

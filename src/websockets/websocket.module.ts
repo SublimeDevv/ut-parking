@@ -6,6 +6,6 @@ import { EventsService } from 'src/events/events.service';
 @Module({
   providers: [WebsocketGateway, EventsService],
   imports: [forwardRef(() => ParkingSlotModule)],
-  exports: [WebsocketGateway], // Exporta WebsocketGateway
+  exports: [WebsocketGateway],
 })
 export class GatewayModule {}
