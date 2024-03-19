@@ -23,10 +23,7 @@ export class WebsocketGateway
     private readonly parkingSlotService: ParkingSlotService,
     private readonly eventsService: EventsService,
   ) {
-    this.eventsService.on(
-      'reupdateData',
-      this.handleReupdateData.bind(this),
-    );
+    this.eventsService.on('reupdateData', this.handleReupdateData.bind(this));
   }
 
   @WebSocketServer()
@@ -48,6 +45,6 @@ export class WebsocketGateway
   @SubscribeMessage('getData')
   async handleParkingSlotUpdate() {
     const dbData = await this.parkingSlotService.findAll();
-    this.server.emit('updateData', dbData); 
+    this.server.emit('updateData', dbData);
   }
 }

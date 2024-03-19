@@ -13,4 +13,6 @@ export class ParkingSlot {
 
   @Column({ type: 'boolean', default: true })
   isOccupied: boolean;
+
+  
 }

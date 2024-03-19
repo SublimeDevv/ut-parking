@@ -39,6 +39,7 @@ export class ParkingSlotSubscriber
         ...allSensorsExceptUpdated,
         event.entity as ParkingSlot,
       ];
+      
       this.websocketGateway.server.emit('updateData', allSensors);
     }
   }
