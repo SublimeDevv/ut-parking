@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { ParkingSlot } from './../parking-slot/entities/parking-slot.entity';
+import { User } from 'src/auth/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import axios from 'axios';
@@ -15,6 +16,8 @@ export class SensorService {
   constructor(
     @InjectRepository(ParkingSlot)
     private readonly parkingSlotRepository: Repository<ParkingSlot>,
+    @InjectRepository(User)
+    private readonly UserRepository: Repository<User>,
   ) {}
 
   async createOrUpdateSensor(activeSensors: string[]) {
@@ -68,6 +71,33 @@ export class SensorService {
     } catch (error) {
       this.handleDBExceptions(error);
     }
+  }
+
+  // Para registrar su hora de entrada
+  async findTuitonById(id: string) {
+    const findTuition = await this.UserRepository.findOne({
+      where: { tuition: id.trim() },
+    });
+
+    if (findTuition) {
+      await this.UserRepository.update(findTuition.id, {
+        entry_time: new Date(),
+      });
+    }
+    return findTuition;
+  }
+
+  async findTuitonByIdTwo(id: string) {
+    const findTuition = await this.UserRepository.findOne({
+      where: { tuition: id.trim() },
+    });
+
+    if (findTuition) {
+      await this.UserRepository.update(findTuition.id, {
+        departure_time: new Date(),
+      });
+    }
+    return findTuition;
   }
 
   private handleDBExceptions(error: any) {
