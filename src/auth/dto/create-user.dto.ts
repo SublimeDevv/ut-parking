@@ -38,11 +38,11 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   @MinLength(1)
   tuition: string;
 
-  @ApiProperty({ required: false, enum: ['admin', 'user'] })
+  @ApiProperty({ required: false, enum: ['student', 'teacher', 'guard'] })
   @IsString()
-  @IsOptional()
   roles: ValidRoles;
 }

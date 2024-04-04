@@ -6,6 +6,7 @@ import { SensorModule } from './mqtt-sensor/sensor.module';
 import { GatewayModule } from './websockets/websocket.module';
 import { EventsService } from './events/events.service';
 import { AuthModule } from './auth/auth.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     SensorModule,
     ParkingSlotModule,
     AuthModule,
+    SeedModule,
   ],
   providers: [EventsService],
 })

@@ -3,12 +3,14 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { ValidRoles } from '../interfaces/valid-roles.interface';
 import { Transform } from 'class-transformer';
 import moment from 'moment';
+import { HistorySlot } from 'src/parking-slot/entities/history-slot.entity';
 
 @Entity('users')
 export class User {
@@ -39,18 +41,29 @@ export class User {
 
   @Column({
     type: 'varchar',
+    nullable: true,
+  })
+  slug: string;
+
+  @Column({
+    type: 'varchar',
     default: 'https://acortar.link/MRAY6q',
     length: 255,
   })
   picture: string;
 
-  @Transform(({ value }) => moment(value).format('DD/MM/YYYY HH:mm:ss'))
-  @Column()
-  entry_time: Date;
+  @OneToMany(() => HistorySlot, (historySlot) => historySlot.user)
+  historySlots: HistorySlot[];
 
-  @Transform(({ value }) => moment(value).format('DD/MM/YYYY HH:mm:ss'))
-  @Column()
-  departure_time: Date;
+  @BeforeInsert()
+  setSlugName() {
+    this.slug = this.fullName.toLowerCase().split(' ').join('-');
+  }
+
+  @BeforeUpdate()
+  setSlugNameOnUpdate() {
+    this.slug = this.fullName.toLowerCase().split(' ').join('-');
+  }
 
   @BeforeInsert()
   checkFields() {

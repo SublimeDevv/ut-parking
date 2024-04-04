@@ -8,6 +8,7 @@ import { User } from 'src/auth/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import axios from 'axios';
+import { HistorySlot } from 'src/parking-slot/entities/history-slot.entity';
 
 @Injectable()
 export class SensorService {
@@ -18,6 +19,8 @@ export class SensorService {
     private readonly parkingSlotRepository: Repository<ParkingSlot>,
     @InjectRepository(User)
     private readonly UserRepository: Repository<User>,
+    @InjectRepository(HistorySlot)
+    private readonly historySlotRepository: Repository<HistorySlot>,
   ) {}
 
   async createOrUpdateSensor(activeSensors: string[]) {
@@ -80,8 +83,9 @@ export class SensorService {
     });
 
     if (findTuition) {
-      await this.UserRepository.update(findTuition.id, {
+      await this.historySlotRepository.save({
         entry_time: new Date(),
+        user: findTuition,
       });
     }
     return findTuition;
@@ -93,8 +97,9 @@ export class SensorService {
     });
 
     if (findTuition) {
-      await this.UserRepository.update(findTuition.id, {
+      await this.historySlotRepository.save({
         departure_time: new Date(),
+        user: findTuition,
       });
     }
     return findTuition;

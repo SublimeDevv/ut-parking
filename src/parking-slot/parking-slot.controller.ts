@@ -15,6 +15,16 @@ export class ParkingSlotController {
     return this.parkingSlotService.findAll();
   }
 
+  @Get('get-history')
+  getAllHistorySlots() {
+    return this.parkingSlotService.getAllHistorySlots();
+  }
+
+  @Get('get-history-user/:id')
+  getHistorySlotsByUser(@Param('id') id: string) {
+    return this.parkingSlotService.getHistorySlotsByUser(id);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,
