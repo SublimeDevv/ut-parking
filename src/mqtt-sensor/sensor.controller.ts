@@ -24,9 +24,9 @@ export class SensorController {
     const getValue = await this.sensorService.findTuitonById(data);
 
     if (getValue) {
-      this.sendMessage('existe');
+      this.sendMessageOne('plumaUno');
     } else {
-      this.sendMessage('no existe');
+      this.sendMessageOne('no existe');
     }
   }
 
@@ -36,22 +36,27 @@ export class SensorController {
     const getValue = await this.sensorService.findTuitonByIdTwo(data);
 
     if (getValue) {
-      this.sendMessage('existe');
+      this.sendMessageTwo('plumaDos');
     } else {
-      this.sendMessage('no existe');
+      this.sendMessageTwo('no existe');
     }
   }
 
-  // @MessagePattern('topic/validate')
-  // getValidation(@Payload() data: any, @Ctx() context: RmqContext) {
-  //   console.log(data);
-  // }
-
-  sendMessage(message: string) {
+  sendMessageOne(message: string) {
     const client = mqtt.connect('mqtt://test.mosquitto.org');
 
     client.on('connect', () => {
       client.publish('topic/validate', message, (err) => {
+        client.end();
+      });
+    });
+  }
+
+  sendMessageTwo(message: string) {
+    const client = mqtt.connect('mqtt://test.mosquitto.org');
+
+    client.on('connect', () => {
+      client.publish('topic/validateTwo', message, (err) => {
         client.end();
       });
     });

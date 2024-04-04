@@ -27,12 +27,13 @@ const char *mqttTopic = "topic/message";
 const char *mqttTopicTwo = "topic/rfid";
 const char *mqttTopicThree = "topic/validate";
 const char *mqttTopicFour = "topic/rfidTwo";
+const char *mqttTopicFive = "topic/validateTwo";
 
 void setup()
 {
   Serial.begin(9600);
   Serial2.begin(9600, SERIAL_8N1, RXp2, TXp2);
-  Serial.begin(9600, SERIAL_8N1, RX0, TX0);
+  Serial.begin(9600, SERIAL_8N1, RX0, TX0); // Inicializamos otra comunicación serial en RX0 y TX0
 
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED)
@@ -59,14 +60,19 @@ void callback(char *topic, byte *payload, unsigned int length)
     msg += (char)payload[i]; // Corrección: se utiliza el operador de concatenación para construir el mensaje completo
     // Serial.print((char)payload[i]);
   }
-  if (msg == "existe")
+  if (msg == "plumaUno")
   {
-    Serial.println("S abre servo");
+    Serial.println("Se abre servo de entrada");
+  }
+  else if (msg == "plumaDos")
+  {
+    Serial.println("Se abre servo de salida");
   }
   else
   {
-    Serial.println("No se abre servo");
+    Serial.println("No existe");
   }
+
   // Serial.println();
 }
 
@@ -77,6 +83,7 @@ void reconnect()
     if (client.connect("arduinoClient"))
     {
       client.subscribe(mqttTopicThree);
+      client.subscribe(mqttTopicFive);
     }
     else
     {
