@@ -28,6 +28,7 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   @IsString()
   @MinLength(6)
+  @IsOptional()
   @MaxLength(50)
   @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message:

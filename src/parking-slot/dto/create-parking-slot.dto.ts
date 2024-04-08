@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsOptional, IsString } from 'class-validator';
 
 export class CreateParkingSlotDto {
   @IsString()
@@ -7,4 +7,8 @@ export class CreateParkingSlotDto {
   @IsBoolean()
   @IsOptional()
   isOccupied: boolean;
+
+  @IsDate()
+  @IsOptional()
+  last_time: Date;
 }
